@@ -3,8 +3,14 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"strconv"
 )
+
+type UserData struct {
+	firstname       string
+	lastname        string
+	email           string
+	numberOfTickets uint
+}
 
 func main() {
 	var conferenceName = "Go Conference"
@@ -13,7 +19,7 @@ func main() {
 	greetUsers(conferenceName)
 	fmt.Printf("We have total of %v tickets and %v are still available\n", conferenceTickets, remainingTickets)
 	fmt.Println("Get your tickets here to attend")
-	var bookings []map[string]string
+	var bookings = make([]UserData, 0)
 	for true {
 		firstname, lastname, email, userTickets := getUserInput()
 		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstname, lastname, email, userTickets, remainingTickets)
@@ -31,17 +37,18 @@ func main() {
 			}
 		}
 	}
-	fmt.Printf("%v", bookings)
+	fmt.Printf("%v\n", bookings)
 }
 
-func bookTicket(remainingTickets *uint, userTickets uint, bookings *[]map[string]string, firstname string, lastname string, email string, conferenceName string) {
-	var userData = make(map[string]string)
-	userData["firstname"] = firstname
-	userData["lastname"] = lastname
-	userData["email"] = email
-	userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
-	*remainingTickets -= userTickets
+func bookTicket(remainingTickets *uint, userTickets uint, bookings *[]UserData, firstname string, lastname string, email string, conferenceName string) {
+	var userData = UserData{
+		firstname:       firstname,
+		lastname:        lastname,
+		email:           email,
+		numberOfTickets: userTickets,
+	}
 	*bookings = append(*bookings, userData)
+	*remainingTickets -= userTickets
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstname, lastname, userTickets, email)
 	fmt.Printf("%v Tickets remaining for %v\n", *remainingTickets, conferenceName)
 }
