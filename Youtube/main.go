@@ -3,6 +3,7 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
+	"time"
 )
 
 type UserData struct {
@@ -31,6 +32,7 @@ func main() {
 			fmt.Printf("Invalid ticket-number, try again !\n")
 		} else {
 			bookTicket(&remainingTickets, userTickets, &bookings, firstname, lastname, email, conferenceName)
+			go sendTicket(userTickets, firstname, lastname, email)
 			if remainingTickets == 0 {
 				fmt.Printf("Our conference has ended, please come next year !\n")
 				break
@@ -69,4 +71,12 @@ func getUserInput() (string, string, string, uint) {
 	fmt.Println("Enter number of tickets you wanna purchage !")
 	fmt.Scan(&userTickets)
 	return firstname, lastname, email, userTickets
+}
+
+func sendTicket(userTickets uint, firstname string, lastname string, email string) {
+	time.Sleep(10 * time.Second)
+	var ticket = fmt.Sprintf("%v tickets for %v %v", userTickets, firstname, lastname)
+	fmt.Println("###########")
+	fmt.Printf("Sending ticket :\n %v \nto email address %v\n", ticket, email)
+	fmt.Println("###########")
 }
