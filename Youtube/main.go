@@ -1,8 +1,9 @@
 package main
 
 import (
+	"booking-app/helper"
 	"fmt"
-	"strings"
+	"strconv"
 )
 
 func main() {
@@ -12,10 +13,10 @@ func main() {
 	greetUsers(conferenceName)
 	fmt.Printf("We have total of %v tickets and %v are still available\n", conferenceTickets, remainingTickets)
 	fmt.Println("Get your tickets here to attend")
-	var bookings []string
+	var bookings []map[string]string
 	for true {
 		firstname, lastname, email, userTickets := getUserInput()
-		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstname, lastname, email, userTickets, remainingTickets)
+		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstname, lastname, email, userTickets, remainingTickets)
 		if !isValidName {
 			fmt.Printf("Entered name is too short, try again !\n")
 		} else if !isValidEmail {
@@ -33,22 +34,20 @@ func main() {
 	fmt.Printf("%v", bookings)
 }
 
-func bookTicket(remainingTickets *uint, userTickets uint, bookings *[]string, firstname string, lastname string, email string, conferenceName string) {
+func bookTicket(remainingTickets *uint, userTickets uint, bookings *[]map[string]string, firstname string, lastname string, email string, conferenceName string) {
+	var userData = make(map[string]string)
+	userData["firstname"] = firstname
+	userData["lastname"] = lastname
+	userData["email"] = email
+	userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
 	*remainingTickets -= userTickets
-	*bookings = append(*bookings, firstname+" "+lastname)
+	*bookings = append(*bookings, userData)
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstname, lastname, userTickets, email)
 	fmt.Printf("%v Tickets remaining for %v\n", *remainingTickets, conferenceName)
 }
 
 func greetUsers(conference_name string) {
 	fmt.Printf("Welcome to %v\n", conference_name)
-}
-
-func validateUserInput(firstname string, lastname string, email string, userTickets uint, remainingTickets uint) (bool, bool, bool) {
-	isValidName := len(firstname) >= 2 && len(lastname) >= 2
-	isValidEmail := strings.Contains(email, "@")
-	isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
-	return isValidName, isValidEmail, isValidTicketNumber
 }
 
 func getUserInput() (string, string, string, uint) {
